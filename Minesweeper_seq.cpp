@@ -18,6 +18,27 @@ public:
 	}
 };
 
+Cell background[SIZE][SIZE];
+char foreground[SIZE][SIZE];
+
+void floodfill0(int x, int y)
+{
+	if (foreground[x][y] == 'H')
+	{
+		foreground[x][y] = char(background[x][y].number_of_mines + 48);
+		if (background[x][y].number_of_mines == 0)
+		{
+			if (x > 0) floodfill0(x - 1, y);
+			if (x > 0 && y < 9) floodfill0(x - 1, y + 1);
+			if (y < 9) floodfill0(x, y + 1);
+			if (x < 9 && y < 9) floodfill0(x + 1, y + 1);
+			if (x < 9) floodfill0(x + 1, y);
+			if (x < 9 && y > 0) floodfill0(x + 1, y - 1);
+			if (y > 0) floodfill0(x, y - 1);
+			if (x > 0 && y > 0) floodfill0(x - 1, y - 1);
+		}
+	}
+}
 
 int main()
 {	
@@ -27,8 +48,7 @@ int main()
 	cout << "First tile: " << first_tile_x << " " << first_tile_y << endl;
 	cout.flush();
 	
-	Cell background[SIZE][SIZE];
-	
+
 	int number_of_mines = 0;
 
 	//place mines
@@ -37,7 +57,8 @@ int main()
 		int x = rand() % SIZE;
 		int y = rand() % SIZE;
 
-		if (x == first_tile_x && y == first_tile_y)
+		//if (x == first_tile_x && y == first_tile_y)
+		if (x >= first_tile_x - 1 && x <= first_tile_x + 1 && y >= first_tile_y - 1 && y <= first_tile_y + 1)
 		{
 			continue;
 		}
@@ -84,14 +105,14 @@ int main()
 		}
 	}
 
-	//print the board
+	//print the board background
 	for (int i = 0; i < SIZE; i++)
 	{
 		for (int j = 0; j < SIZE; j++)
 		{
 			if (background[i][j].is_mine)
 			{
-				cout << "M ";
+				cout << "@ ";
 			}
 			else
 			{
@@ -100,6 +121,22 @@ int main()
 		}
 		cout << endl;
 	}
+
+	cout << endl;
+
+	for (int i = 0; i < SIZE; i++)
+		for (int j = 0; j < SIZE; j++)
+			foreground[i][j] = 'H';
+	
+	floodfill0(first_tile_x, first_tile_y);
+
+	for (int i = 0; i < SIZE; i++)
+	{
+		for (int j = 0; j < SIZE; j++)
+			cout << foreground[i][j] << " ";
+		cout << endl;
+	}
+
 
 	cout << "Any key to exit";
 	cin.get();
