@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -20,12 +21,15 @@ public:
 
 Cell background[SIZE][SIZE];
 char foreground[SIZE][SIZE];
+float prob[SIZE][SIZE];
+
 
 void floodfill0(int x, int y)
 {
 	if (foreground[x][y] == 'H')
 	{
 		foreground[x][y] = char(background[x][y].number_of_mines + 48);
+		prob[x][y] = 0.0f;
 		if (background[x][y].number_of_mines == 0)
 		{
 			if (x > 0) floodfill0(x - 1, y);
@@ -47,6 +51,10 @@ int main()
 	int first_tile_y = rand() % SIZE;
 	cout << "First tile: " << first_tile_x << " " << first_tile_y << endl;
 	cout.flush();
+	for (int i = 0; i < SIZE; i++)
+		for (int j = 0; j < SIZE; j++)
+			prob[i][j] = 0.1f;
+
 	
 
 	int number_of_mines = 0;
@@ -127,16 +135,58 @@ int main()
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 0; j < SIZE; j++)
 			foreground[i][j] = 'H';
-	
+	//first move
 	floodfill0(first_tile_x, first_tile_y);
+
+
+	//second move
 
 	for (int i = 0; i < SIZE; i++)
 	{
 		for (int j = 0; j < SIZE; j++)
-			cout << foreground[i][j] << " ";
-		cout << endl;
+		{
+			int hidden_around = 0;
+			if (foreground[i][j] == 'H')
+			{
+				continue;
+			}
+			if (foreground[i + 1][j] == 'H') hidden_around++;
+			if (foreground[i - 1][j] == 'H') hidden_around++;
+			if (foreground[i][j + 1] == 'H') hidden_around++;
+			if (foreground[i][j - 1] == 'H') hidden_around++;
+			if (foreground[i + 1][j + 1] == 'H') hidden_around++;
+			if (foreground[i - 1][j + 1] == 'H') hidden_around++;
+			if (foreground[i + 1][j - 1] == 'H') hidden_around++;
+			if (foreground[i - 1][j - 1] == 'H') hidden_around++;
+			
+			if (hidden_around == int(foreground[i][j]) - 48)
+			{
+				if (foreground[i + 1][j] == 'H') prob[i + 1][j] = 1.0f;
+				if (foreground[i - 1][j] == 'H') prob[i - 1][j] = 1.0f;
+				if (foreground[i][j + 1] == 'H') prob[i][j + 1] = 1.0f;
+				if (foreground[i][j - 1] == 'H') prob[i][j - 1] = 1.0f;
+				if (foreground[i + 1][j + 1] == 'H') prob[i + 1][j + 1] = 1.0f;
+				if (foreground[i - 1][j + 1] == 'H') prob[i - 1][j + 1] = 1.0f;
+				if (foreground[i + 1][j - 1] == 'H') prob[i + 1][j - 1] = 1.0f;
+				if (foreground[i - 1][j - 1] == 'H') prob[i - 1][j - 1] = 1.0f;
+			}
+
+
+		}
+			
+			
 	}
 
+	for (int i = 0; i < SIZE; i++)
+	{
+		for (int j = 0; j < SIZE; j++)
+		{
+			cout << foreground[i][j];
+			printf("(%0.1f) ", prob[i][j]);
+			cout << " ";
+		}
+		cout << endl;
+	}
 
 	cout << "Any key to exit";
 	cin.get();
