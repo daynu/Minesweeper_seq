@@ -172,9 +172,7 @@ int main()
 			}
 
 
-		}
-			
-			
+		}	
 	}
 
 	for (int i = 0; i < SIZE; i++)
@@ -182,7 +180,54 @@ int main()
 		for (int j = 0; j < SIZE; j++)
 		{
 			cout << foreground[i][j];
-			printf("(%0.1f) ", prob[i][j]);
+			/*printf("(%0.1f) ", prob[i][j]);*/
+			cout << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+
+	//flood fill definite moves
+	for (int i = 0; i < SIZE; i++)
+	{
+		for (int j = 0; j < SIZE; j++)
+		{
+			int flagged = 0;
+			if (foreground[i][j] == 'H')
+			{
+				continue;
+			}
+			if (prob[i + 1][j] == 1.0) flagged++;
+			if (prob[i - 1][j] == 1.0) flagged++;
+			if (prob[i][j + 1] == 1.0) flagged++;
+			if (prob[i][j - 1] == 1.0) flagged++;
+			if (prob[i + 1][j + 1] == 1.0) flagged++;
+			if (prob[i - 1][j + 1] == 1.0) flagged++;
+			if (prob[i + 1][j - 1] == 1.0) flagged++;
+			if (prob[i - 1][j - 1] == 1.0) flagged++;
+
+			if (flagged == int(foreground[i][j]) - 48)
+			{
+				if (foreground[i + 1][j] == 'H' && prob[i + 1][j] != 1.0) floodfill0(i + 1, j);
+				if (foreground[i - 1][j] == 'H' && prob[i - 1][j] != 1.0) floodfill0(i - 1, j);
+				if (foreground[i][j + 1] == 'H' && prob[i][j + 1] != 1.0) floodfill0(i, j + 1);
+				if (foreground[i][j - 1] == 'H' && prob[i][j - 1] != 1.0) floodfill0(i, j - 1);
+				if (foreground[i + 1][j + 1] == 'H' && prob[i + 1][j + 1] != 1.0) floodfill0(i + 1, j + 1);
+				if (foreground[i - 1][j + 1] == 'H' && prob[i - 1][j + 1] != 1.0) floodfill0(i - 1, j + 1);
+				if (foreground[i + 1][j - 1] == 'H' && prob[i + 1][j - 1] != 1.0) floodfill0(i + 1, j - 1);
+				if (foreground[i - 1][j - 1] == 'H' && prob[i - 1][j - 1] != 1.0) floodfill0(i - 1, j - 1);
+
+			}
+		}
+	}
+
+
+	for (int i = 0; i < SIZE; i++)
+	{
+		for (int j = 0; j < SIZE; j++)
+		{
+			cout << foreground[i][j];
+			/*printf("(%0.1f) ", prob[i][j]);*/
 			cout << " ";
 		}
 		cout << endl;
