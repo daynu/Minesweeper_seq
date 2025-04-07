@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <ctime>
 
 using namespace std;
 
@@ -24,8 +25,11 @@ char foreground[SIZE][SIZE];
 float prob[SIZE][SIZE];
 
 
+
 void floodfill0(int x, int y)
-{
+{	
+	if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return;
+
 	if (foreground[x][y] == 'H')
 	{
 		foreground[x][y] = char(background[x][y].number_of_mines + 48);
@@ -65,7 +69,6 @@ int main()
 		int x = rand() % SIZE;
 		int y = rand() % SIZE;
 
-		//if (x == first_tile_x && y == first_tile_y)
 		if (x >= first_tile_x - 1 && x <= first_tile_x + 1 && y >= first_tile_y - 1 && y <= first_tile_y + 1)
 		{
 			continue;
@@ -74,6 +77,7 @@ int main()
 		if (!background[x][y].is_mine)
 		{
 			background[x][y].is_mine = true;
+			background[x][y].number_of_mines = 9;
 			number_of_mines++;
 		}
 	   
@@ -146,7 +150,7 @@ int main()
 		for (int j = 0; j < SIZE; j++)
 		{
 			int hidden_around = 0;
-			if (foreground[i][j] == 'H')
+			if (foreground[i][j] == 'H' || int(foreground[i][j]) - 48 == 0)
 			{
 				continue;
 			}
@@ -187,39 +191,39 @@ int main()
 	}
 	cout << endl;
 
-	//flood fill definite moves
-	for (int i = 0; i < SIZE; i++)
+//flood fill definite moves
+for (int i = 0; i < SIZE; i++)
+{
+	for (int j = 0; j < SIZE; j++)
 	{
-		for (int j = 0; j < SIZE; j++)
+		int flagged = 0;
+		if (foreground[i][j] == 'H')
 		{
-			int flagged = 0;
-			if (foreground[i][j] == 'H')
-			{
-				continue;
-			}
-			if (prob[i + 1][j] == 1.0) flagged++;
-			if (prob[i - 1][j] == 1.0) flagged++;
-			if (prob[i][j + 1] == 1.0) flagged++;
-			if (prob[i][j - 1] == 1.0) flagged++;
-			if (prob[i + 1][j + 1] == 1.0) flagged++;
-			if (prob[i - 1][j + 1] == 1.0) flagged++;
-			if (prob[i + 1][j - 1] == 1.0) flagged++;
-			if (prob[i - 1][j - 1] == 1.0) flagged++;
+			continue;
+		}
+		if (prob[i + 1][j] == 1.0) flagged++;
+		if (prob[i - 1][j] == 1.0) flagged++;
+		if (prob[i][j + 1] == 1.0) flagged++;
+		if (prob[i][j - 1] == 1.0) flagged++;
+		if (prob[i + 1][j + 1] == 1.0) flagged++;
+		if (prob[i - 1][j + 1] == 1.0) flagged++;
+		if (prob[i + 1][j - 1] == 1.0) flagged++;
+		if (prob[i - 1][j - 1] == 1.0) flagged++;
 
-			if (flagged == int(foreground[i][j]) - 48)
-			{
-				if (foreground[i + 1][j] == 'H' && prob[i + 1][j] != 1.0) floodfill0(i + 1, j);
-				if (foreground[i - 1][j] == 'H' && prob[i - 1][j] != 1.0) floodfill0(i - 1, j);
-				if (foreground[i][j + 1] == 'H' && prob[i][j + 1] != 1.0) floodfill0(i, j + 1);
-				if (foreground[i][j - 1] == 'H' && prob[i][j - 1] != 1.0) floodfill0(i, j - 1);
-				if (foreground[i + 1][j + 1] == 'H' && prob[i + 1][j + 1] != 1.0) floodfill0(i + 1, j + 1);
-				if (foreground[i - 1][j + 1] == 'H' && prob[i - 1][j + 1] != 1.0) floodfill0(i - 1, j + 1);
-				if (foreground[i + 1][j - 1] == 'H' && prob[i + 1][j - 1] != 1.0) floodfill0(i + 1, j - 1);
-				if (foreground[i - 1][j - 1] == 'H' && prob[i - 1][j - 1] != 1.0) floodfill0(i - 1, j - 1);
+		if (flagged == int(foreground[i][j]) - 48)
+		{
+			if (foreground[i + 1][j] == 'H' && prob[i + 1][j] != 1.0) floodfill0(i + 1, j);
+			if (foreground[i - 1][j] == 'H' && prob[i - 1][j] != 1.0) floodfill0(i - 1, j);
+			if (foreground[i][j + 1] == 'H' && prob[i][j + 1] != 1.0) floodfill0(i, j + 1);
+			if (foreground[i][j - 1] == 'H' && prob[i][j - 1] != 1.0) floodfill0(i, j - 1);
+			if (foreground[i + 1][j + 1] == 'H' && prob[i + 1][j + 1] != 1.0) floodfill0(i + 1, j + 1);
+			if (foreground[i - 1][j + 1] == 'H' && prob[i - 1][j + 1] != 1.0) floodfill0(i - 1, j + 1);
+			if (foreground[i + 1][j - 1] == 'H' && prob[i + 1][j - 1] != 1.0) floodfill0(i + 1, j - 1);
+			if (foreground[i - 1][j - 1] == 'H' && prob[i - 1][j - 1] != 1.0) floodfill0(i - 1, j - 1);
 
-			}
 		}
 	}
+}
 
 
 	for (int i = 0; i < SIZE; i++)
@@ -227,7 +231,7 @@ int main()
 		for (int j = 0; j < SIZE; j++)
 		{
 			cout << foreground[i][j];
-			/*printf("(%0.1f) ", prob[i][j]);*/
+			
 			cout << " ";
 		}
 		cout << endl;
